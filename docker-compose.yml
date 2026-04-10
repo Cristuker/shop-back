@@ -7,16 +7,17 @@ services:
     container_name: shop-postgres
     restart: unless-stopped
     environment:
-      POSTGRES_DB: ${DB_NAME:-shop_db}
-      POSTGRES_USER: ${DB_USER:-shop_user}
-      POSTGRES_PASSWORD: ${DB_PASSWORD:-shop_password}
+      POSTGRES_DB: shop_db
+      POSTGRES_USER: shop_user
+      POSTGRES_PASSWORD: shop_password
       POSTGRES_INITDB_ARGS: "--encoding=UTF8"
     ports:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
+      - ./docker/postgres/init-users.sql:/docker-entrypoint-initdb.d/init-users.sql:ro
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-shop_user}"]
+      test: ["CMD-SHELL", "pg_isready -U shop_user"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -34,13 +35,13 @@ services:
       postgres:
         condition: service_healthy
     environment:
-      NODE_ENV: ${NODE_ENV:-development}
-      PORT: ${PORT:-3000}
-      DB_HOST: ${DB_HOST:-postgres}
-      DB_PORT: ${DB_PORT:-5432}
-      DB_NAME: ${DB_NAME:-shop_db}
-      DB_USER: ${DB_USER:-shop_user}
-      DB_PASSWORD: ${DB_PASSWORD:-shop_password}
+      NODE_ENV: development
+      PORT: 3000
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: shop_db
+      DB_USER: shop_user
+      DB_PASSWORD: shop_password
     ports:
       - "3000:3000"
     command: ["npm", "run", "start:dev"]

@@ -1,0 +1,88 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum UserType {
+  SELLER
+  BUYER
+}
+
+enum OfferStatus {
+  ACTIVE
+  EXPIRED
+  CLOSED
+}
+
+model User {
+  id Int @default(autoincrement()) @id
+  name String @db.VarChar(100)
+  email String @unique @db.VarChar(100)
+  type UserType
+  store Store?
+  password String @db.VarChar(255)
+  phone String @db.VarChar(14)
+  interests Interest[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([email])
+  @@index([type])
+}
+
+model Store {
+  id Int @default(autoincrement()) @id
+  name String @db.VarChar(100)
+  description String @db.VarChar(255)
+  phone String @db.VarChar(14)
+  address String @db.VarChar(255)
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId Int @unique
+  offers Offer[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+}
+
+model Offer {
+  id Int @default(autoincrement()) @id
+  name String @db.VarChar(100)
+  description String @db.VarChar(255)
+  value Decimal @db.Decimal(10, 2)
+  discount Decimal @db.Decimal(5, 2)
+  stock Int @default(0)
+  expiresAt DateTime
+  status OfferStatus @default(ACTIVE)
+  storeId Int
+  store Store @relation(fields: [storeId], references: [id], onDelete: Cascade)
+  interests Interest[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([storeId])
+  @@index([status])
+  @@index([expiresAt])
+}
+
+model Interest {
+  id Int @default(autoincrement()) @id
+  userId Int
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  offerId Int
+  offer Offer @relation(fields: [offerId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@unique([userId, offerId])
+  @@index([userId])
+  @@index([offerId])
+}
