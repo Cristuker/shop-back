@@ -1,8 +1,8 @@
 [ ] Autenticação
-    [ ] Endpoint de registro (email/senha)
+    [x] Endpoint de registro (email/senha)
     [ ] Endpoint de login (email/senha)
-    [ ] Perfil `lojista`
-    [ ] Perfil `comprador`
+    [x] Perfil `lojista`
+    [x] Perfil `comprador`
     [ ] Geração e validação de JWT
 
 [ ] Ofertas
@@ -20,7 +20,7 @@
     [ ] Notificar compradores conectados ao publicar nova oferta
 
 [ ] Infraestrutura
-    [ ] Configurar banco de dados (PostgreSQL ou MongoDB)
-    [ ] Configurar docker-compose
+    [x] Configurar banco de dados (PostgreSQL ou MongoDB)
+    [x] Configurar docker-compose
     [ ] Escrever testes com Jest (regras de negócio principais)
     [ ] Escrever README com instruções de setup, endpoints, decisões técnicas e trade-offs
