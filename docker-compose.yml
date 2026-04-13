@@ -24,32 +24,32 @@ services:
     networks:
       - shop-network
 
-  # NestJS Application
-  app:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    container_name: shop-back
-    restart: unless-stopped
-    depends_on:
-      postgres:
-        condition: service_healthy
-    environment:
-      NODE_ENV: development
-      PORT: 3000
-      DB_HOST: postgres
-      DB_PORT: 5432
-      DB_NAME: shop_db
-      DB_USER: shop_user
-      DB_PASSWORD: shop_password
-    ports:
-      - "3000:3000"
-    command: ["npm", "run", "start:dev"]
-    volumes:
-      - .:/app
-      - /app/node_modules
-    networks:
-      - shop-network
+  # # NestJS Application
+  # app:
+  #   build:
+  #     context: .
+  #     dockerfile: Dockerfile
+  #   container_name: shop-back
+  #   restart: unless-stopped
+  #   depends_on:
+  #     postgres:
+  #       condition: service_healthy
+  #   environment:
+  #     NODE_ENV: development
+  #     PORT: 3000
+  #     DB_HOST: postgres
+  #     DB_PORT: 5432
+  #     DB_NAME: shop_db
+  #     DB_USER: shop_user
+  #     DB_PASSWORD: shop_password
+  #   ports:
+  #     - "3000:3000"
+  #   command: ["npm", "run", "start:dev"]
+  #   volumes:
+  #     - .:/app
+  #     - /app/node_modules
+  #   networks:
+  #     - shop-network
 
 
 volumes:

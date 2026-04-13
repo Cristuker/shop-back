@@ -39,7 +39,7 @@ describe("AuthController", () => {
     const response = await request(app.getHttpServer())
       .post("/auth/login")
       .send({ email: "maria@example.com", password: "StrongPassword123" })
-      .expect(201);
+      .expect(200);
 
     expect(response.body).toEqual({ access_token: "mocked.jwt.token" });
     expect(authService.login).toHaveBeenCalledWith({

@@ -1,15 +1,21 @@
-[ ] Autenticação
+[x] Autenticação
     [x] Endpoint de registro (email/senha)
-    [ ] Endpoint de login (email/senha)
+    [x] Endpoint de login (email/senha)
     [x] Perfil `lojista`
     [x] Perfil `comprador`
-    [ ] Geração e validação de JWT
+    [x] Geração e validação de JWT
 
 [ ] Ofertas
     [ ] Criar oferta (título, descrição, desconto %, estoque, validade)
     [ ] Editar oferta
     [ ] Encerrar oferta
     [ ] Listar ofertas ativas (endpoint público com filtro por status)
+
+[ ] Loja
+    [ ] Criar Loja
+    [ ] Editar Loja
+    [ ] Excluir Loja
+    [ ] Listar Lojas
 
 [ ] Interesse
     [ ] Registrar interesse em uma oferta
