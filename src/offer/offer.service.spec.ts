@@ -3,6 +3,7 @@ import { ForbiddenException, NotFoundException } from "@nestjs/common";
 import { Test, TestingModule } from "@nestjs/testing";
 import type { JwtPayload } from "src/auth/guards/jwt-auth.guard";
 import { PrismaService } from "src/prisma.service";
+import { StoreService } from "src/store/store.service";
 import { OfferService } from "./offer.service";
 
 const sellerUser: JwtPayload = {
@@ -56,8 +57,8 @@ describe("OfferService", () => {
       create: jest.Mock;
       update: jest.Mock;
     };
-    store: { findUnique: jest.Mock };
   };
+  let storeService: { findByUserId: jest.Mock };
 
   beforeEach(async () => {
     prisma = {
@@ -68,11 +69,15 @@ describe("OfferService", () => {
         create: jest.fn(),
         update: jest.fn(),
       },
-      store: { findUnique: jest.fn() },
     };
+    storeService = { findByUserId: jest.fn() };
 
     const module: TestingModule = await Test.createTestingModule({
-      providers: [OfferService, { provide: PrismaService, useValue: prisma }],
+      providers: [
+        OfferService,
+        { provide: PrismaService, useValue: prisma },
+        { provide: StoreService, useValue: storeService },
+      ],
     }).compile();
 
     service = module.get<OfferService>(OfferService);
@@ -127,11 +132,11 @@ describe("OfferService", () => {
       await expect(service.create(createDto, buyerUser)).rejects.toThrow(
         ForbiddenException,
       );
-      expect(prisma.store.findUnique).not.toHaveBeenCalled();
+      expect(storeService.findByUserId).not.toHaveBeenCalled();
     });
 
     it("should throw NotFoundException when seller has no store", async () => {
-      prisma.store.findUnique.mockResolvedValue(null);
+      storeService.findByUserId.mockResolvedValue(null);
 
       await expect(service.create(createDto, sellerUser)).rejects.toThrow(
         NotFoundException,
@@ -140,12 +145,13 @@ describe("OfferService", () => {
     });
 
     it("should create offer linked to seller's store", async () => {
-      prisma.store.findUnique.mockResolvedValue(mockStore);
+      storeService.findByUserId.mockResolvedValue(mockStore);
       prisma.offer.create.mockResolvedValue(mockOffer);
 
       const result = await service.create(createDto, sellerUser);
 
       expect(result).toEqual(mockOffer);
+      expect(storeService.findByUserId).toHaveBeenCalledWith(sellerUser.sub);
       expect(prisma.offer.create).toHaveBeenCalledWith({
         data: expect.objectContaining({
           name: "Oferta Top",
@@ -155,7 +161,7 @@ describe("OfferService", () => {
     });
 
     it("should trim whitespace from name and description", async () => {
-      prisma.store.findUnique.mockResolvedValue(mockStore);
+      storeService.findByUserId.mockResolvedValue(mockStore);
       prisma.offer.create.mockResolvedValue(mockOffer);
 
       await service.create(

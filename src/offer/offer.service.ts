@@ -5,13 +5,17 @@ import {
 } from "@nestjs/common";
 import type { JwtPayload } from "src/auth/guards/jwt-auth.guard";
 import { PrismaService } from "src/prisma.service";
+import { StoreService } from "src/store/store.service";
 import { CreateOfferDto } from "./dto/create-offer.dto";
 import { ListOfferDto } from "./dto/list-offer.dto";
 import { UpdateOfferDto } from "./dto/update-offer.dto";
 
 @Injectable()
 export class OfferService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly storeService: StoreService,
+  ) {}
 
   async findActive(query: ListOfferDto) {
     const page = query.page ?? 1;
@@ -30,14 +34,26 @@ export class OfferService {
     return { data, total, page, limit };
   }
 
+  findById(id: number) {
+    return this.prisma.offer.findUnique({
+      where: { id },
+      include: { store: true },
+    });
+  }
+
+  decrementStock(id: number) {
+    return this.prisma.offer.update({
+      where: { id },
+      data: { stock: { decrement: 1 } },
+    });
+  }
+
   async create(dto: CreateOfferDto, user: JwtPayload) {
     if (user.type !== "SELLER") {
       throw new ForbiddenException("Only sellers can create offers");
     }
 
-    const store = await this.prisma.store.findUnique({
-      where: { userId: user.sub },
-    });
+    const store = await this.storeService.findByUserId(user.sub);
 
     if (!store) {
       throw new NotFoundException("Store not found for this seller");
@@ -61,10 +77,7 @@ export class OfferService {
       throw new ForbiddenException("Only sellers can update offers");
     }
 
-    const offer = await this.prisma.offer.findUnique({
-      where: { id },
-      include: { store: true },
-    });
+    const offer = await this.findById(id);
 
     if (!offer) {
       throw new NotFoundException("Offer not found");
@@ -98,10 +111,7 @@ export class OfferService {
       throw new ForbiddenException("Only sellers can close offers");
     }
 
-    const offer = await this.prisma.offer.findUnique({
-      where: { id },
-      include: { store: true },
-    });
+    const offer = await this.findById(id);
 
     if (!offer) {
       throw new NotFoundException("Offer not found");

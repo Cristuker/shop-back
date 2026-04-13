@@ -14,6 +14,10 @@ import { UpdateStoreDto } from "./dto/update-store.dto";
 export class StoreService {
   constructor(private readonly prisma: PrismaService) {}
 
+  findByUserId(userId: number) {
+    return this.prisma.store.findUnique({ where: { userId } });
+  }
+
   async findAll(query: ListStoreDto) {
     const page = query.page ?? 1;
     const limit = query.limit ?? 10;
