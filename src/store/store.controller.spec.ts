@@ -103,9 +103,7 @@ describe("StoreController", () => {
         limit: 10,
       });
 
-      await request(app.getHttpServer())
-        .get("/store?name=maria")
-        .expect(200);
+      await request(app.getHttpServer()).get("/store?name=maria").expect(200);
 
       expect(storeService.findAll).toHaveBeenCalledWith(
         expect.objectContaining({ name: "maria" }),
@@ -130,15 +128,11 @@ describe("StoreController", () => {
     });
 
     it("should return 400 for non-numeric page", async () => {
-      await request(app.getHttpServer())
-        .get("/store?page=abc")
-        .expect(400);
+      await request(app.getHttpServer()).get("/store?page=abc").expect(400);
     });
 
     it("should return 400 when page is less than 1", async () => {
-      await request(app.getHttpServer())
-        .get("/store?page=0")
-        .expect(400);
+      await request(app.getHttpServer()).get("/store?page=0").expect(400);
     });
   });
 
@@ -151,7 +145,11 @@ describe("StoreController", () => {
         .send(validPayload)
         .expect(201);
 
-      expect(response.body).toMatchObject({ id: 1, name: validPayload.name, userId: 1 });
+      expect(response.body).toMatchObject({
+        id: 1,
+        name: validPayload.name,
+        userId: 1,
+      });
       expect(storeService.create).toHaveBeenCalledWith(
         expect.objectContaining(validPayload),
         mockSeller,

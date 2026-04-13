@@ -6,16 +6,15 @@
     [x] Geração e validação de JWT
 
 [ ] Ofertas
-    [ ] Criar oferta (título, descrição, desconto %, estoque, validade)
+    [o] Criar oferta (título, descrição, desconto %, estoque, validade)
     [ ] Editar oferta
     [ ] Encerrar oferta
     [ ] Listar ofertas ativas (endpoint público com filtro por status)
 
-[ ] Loja
-    [ ] Criar Loja
-    [ ] Editar Loja
-    [ ] Excluir Loja
-    [ ] Listar Lojas
+[x] Loja
+    [x] Criar Loja
+    [x] Editar Loja
+    [x] Listar Lojas
 
 [ ] Interesse
     [ ] Registrar interesse em uma oferta
