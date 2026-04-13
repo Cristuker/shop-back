@@ -5,11 +5,11 @@
     [x] Perfil `comprador`
     [x] Geração e validação de JWT
 
-[ ] Ofertas
-    [o] Criar oferta (título, descrição, desconto %, estoque, validade)
-    [ ] Editar oferta
-    [ ] Encerrar oferta
-    [ ] Listar ofertas ativas (endpoint público com filtro por status)
+[x] Ofertas
+    [x] Criar oferta (título, descrição, desconto %, estoque, validade)
+    [x] Editar oferta
+    [x] Encerrar oferta
+    [x] Listar ofertas ativas (endpoint público com filtro por status)
 
 [x] Loja
     [x] Criar Loja
