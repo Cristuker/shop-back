@@ -45,7 +45,17 @@ $ git clone https://github.com/Cristuker/shop-back.git
 $ cd shop-back
 ```
 
-3. Execute o docker
+3. Instale as dependencias
+```bash
+$ npm i
+```
+
+4. Rode o script para gerar os arquivos do prisma
+```bash
+$ npm run prisma:generate
+```
+
+5. Execute o docker
 
 ```bash
 $ docker compose up -d

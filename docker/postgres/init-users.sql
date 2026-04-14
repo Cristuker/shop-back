@@ -1,4 +1,3 @@
-DO $$
 BEGIN
   IF NOT EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'shop_user') THEN
     CREATE ROLE shop_user WITH LOGIN PASSWORD 'shop_password';
@@ -6,7 +5,7 @@ BEGIN
     ALTER ROLE shop_user WITH PASSWORD 'shop_password';
   END IF;
 END
-$$;
+
 
 ALTER DATABASE shop_db OWNER TO postgres;
 GRANT CONNECT ON DATABASE shop_db TO shop_user;
