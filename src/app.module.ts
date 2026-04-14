@@ -7,6 +7,13 @@ import { StoreModule } from "./store/store.module";
 import { InterestModule } from "./interest/interest.module";
 
 @Module({
-  imports: [PrismaModule, UserModule, AuthModule, OfferModule, StoreModule, InterestModule],
+  imports: [
+    PrismaModule,
+    UserModule,
+    AuthModule,
+    OfferModule,
+    StoreModule,
+    InterestModule,
+  ],
 })
 export class AppModule {}

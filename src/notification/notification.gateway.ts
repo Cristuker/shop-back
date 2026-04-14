@@ -19,7 +19,6 @@ export class NotificationGateway
   server!: Server;
 
   private readonly logger = new Logger(NotificationGateway.name);
-  // userId → set of socketIds (same buyer can connect from multiple tabs)
   private readonly clients = new Map<number, Set<string>>();
 
   constructor(
@@ -69,13 +68,15 @@ export class NotificationGateway
     this.logger.log(`Buyer ${userId} disconnected (${client.id})`);
   }
 
-  async notifyInterestedBuyers(offer: {
-    id: number;
-    name: string;
-    storeId: number;
-    [key: string]: unknown;
-  }) {
-    // Find buyers who declared interest in any offer from this store
+  async notifyInterestedBuyers(
+    offer: {
+      id: number;
+      name: string;
+      storeId: number;
+      [key: string]: unknown;
+    },
+    storeName: string,
+  ) {
     const interests = await this.prisma.interest.findMany({
       where: { offer: { storeId: offer.storeId } },
       include: {
@@ -96,12 +97,12 @@ export class NotificationGateway
         this.server.to(socketId).emit("new-offer", {
           offer,
           buyer: { email: user.email, phone: user.phone },
+          storeName,
         });
       }
     }
   }
 
-  // Exposed for testing
   getConnectedClients(): Map<number, Set<string>> {
     return this.clients;
   }

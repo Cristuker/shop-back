@@ -73,7 +73,7 @@ export class OfferService {
       },
     });
 
-    void this.notificationGateway.notifyInterestedBuyers(offer);
+    void this.notificationGateway.notifyInterestedBuyers(offer, store.name);
 
     return offer;
   }

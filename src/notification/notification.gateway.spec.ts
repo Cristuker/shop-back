@@ -135,13 +135,17 @@ describe("NotificationGateway", () => {
     const offer = { id: 5, name: "Oferta Nova", storeId: 10 };
 
     it("should emit new-offer to connected buyers with interest in the store", async () => {
-      const buyer = { id: 2, email: "buyer@example.com", phone: "11999999999", type: "BUYER" };
+      const buyer = {
+        id: 2,
+        email: "buyer@example.com",
+        phone: "11999999999",
+        type: "BUYER",
+      };
       prisma.interest.findMany.mockResolvedValue([{ user: buyer }]);
 
-      // Simulate buyer already connected
       gateway.getConnectedClients().set(buyer.id, new Set(["socket-2"]));
 
-      await gateway.notifyInterestedBuyers(offer);
+      await gateway.notifyInterestedBuyers(offer, "nike");
 
       expect(gateway.server.to).toHaveBeenCalledWith("socket-2");
       expect((gateway.server.to("socket-2") as any).emit).toHaveBeenCalledWith(
@@ -149,26 +153,36 @@ describe("NotificationGateway", () => {
         {
           offer,
           buyer: { email: buyer.email, phone: buyer.phone },
+          storeName: "nike",
         },
       );
     });
 
     it("should not emit to sellers even if they appear in interest query results", async () => {
-      const seller = { id: 1, email: "seller@example.com", phone: null, type: "SELLER" };
+      const seller = {
+        id: 1,
+        email: "seller@example.com",
+        phone: null,
+        type: "SELLER",
+      };
       prisma.interest.findMany.mockResolvedValue([{ user: seller }]);
       gateway.getConnectedClients().set(seller.id, new Set(["socket-1"]));
 
-      await gateway.notifyInterestedBuyers(offer);
+      await gateway.notifyInterestedBuyers(offer, "nike");
 
       expect(gateway.server.to).not.toHaveBeenCalled();
     });
 
     it("should not emit when interested buyer is not connected", async () => {
-      const buyer = { id: 2, email: "buyer@example.com", phone: null, type: "BUYER" };
+      const buyer = {
+        id: 2,
+        email: "buyer@example.com",
+        phone: null,
+        type: "BUYER",
+      };
       prisma.interest.findMany.mockResolvedValue([{ user: buyer }]);
-      // buyer NOT in connectedClients
 
-      await gateway.notifyInterestedBuyers(offer);
+      await gateway.notifyInterestedBuyers(offer, "nike");
 
       expect(gateway.server.to).not.toHaveBeenCalled();
     });
@@ -176,30 +190,41 @@ describe("NotificationGateway", () => {
     it("should not emit when no one has interest in the store", async () => {
       prisma.interest.findMany.mockResolvedValue([]);
 
-      await gateway.notifyInterestedBuyers(offer);
+      await gateway.notifyInterestedBuyers(offer, "nike");
 
       expect(gateway.server.to).not.toHaveBeenCalled();
     });
 
     it("should deduplicate — notify each buyer only once even with multiple interests", async () => {
-      const buyer = { id: 2, email: "buyer@example.com", phone: "11999999999", type: "BUYER" };
-      // Same buyer appears twice (interest in two different offers from the store)
-      prisma.interest.findMany.mockResolvedValue([{ user: buyer }, { user: buyer }]);
+      const buyer = {
+        id: 2,
+        email: "buyer@example.com",
+        phone: "11999999999",
+        type: "BUYER",
+      };
+
+      prisma.interest.findMany.mockResolvedValue([
+        { user: buyer },
+        { user: buyer },
+      ]);
       gateway.getConnectedClients().set(buyer.id, new Set(["socket-2"]));
 
       const emitSpy = jest.fn();
       (gateway.server.to as jest.Mock).mockReturnValue({ emit: emitSpy });
 
-      await gateway.notifyInterestedBuyers(offer);
+      await gateway.notifyInterestedBuyers(offer, "nike");
 
       expect(emitSpy).toHaveBeenCalledTimes(1);
-      expect(emitSpy).toHaveBeenCalledWith("new-offer", expect.objectContaining({ offer }));
+      expect(emitSpy).toHaveBeenCalledWith(
+        "new-offer",
+        expect.objectContaining({ offer }),
+      );
     });
 
     it("should query interests filtered by storeId", async () => {
       prisma.interest.findMany.mockResolvedValue([]);
 
-      await gateway.notifyInterestedBuyers(offer);
+      await gateway.notifyInterestedBuyers(offer, "nike");
 
       expect(prisma.interest.findMany).toHaveBeenCalledWith({
         where: { offer: { storeId: offer.storeId } },

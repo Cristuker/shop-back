@@ -186,11 +186,11 @@ describe("OfferService", () => {
 
       await service.create(createDto, sellerUser);
 
-      // Allow the void promise to settle
       await Promise.resolve();
 
       expect(notificationGateway.notifyInterestedBuyers).toHaveBeenCalledWith(
         mockOffer,
+        mockStore.name,
       );
     });
   });
