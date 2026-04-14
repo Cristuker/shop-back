@@ -16,16 +16,16 @@
     [x] Editar Loja
     [x] Listar Lojas
 
-[ ] Interesse
-    [ ] Registrar interesse em uma oferta
-    [ ] Decrementar estoque a cada interesse registrado
+[x] Interesse
+    [x] Registrar interesse em uma oferta
+    [x] Decrementar estoque a cada interesse registrado
 
-[ ] Tempo real
-    [ ] Configurar WebSocket
-    [ ] Notificar compradores conectados ao publicar nova oferta
+[x] Tempo real
+    [x] Configurar WebSocket
+    [x] Notificar compradores conectados ao publicar nova oferta
 
-[ ] Infraestrutura
+[x] Infraestrutura
     [x] Configurar banco de dados (PostgreSQL ou MongoDB)
     [x] Configurar docker-compose
-    [ ] Escrever testes com Jest (regras de negócio principais)
-    [ ] Escrever README com instruções de setup, endpoints, decisões técnicas e trade-offs
+    [x] Escrever testes com Jest (regras de negócio principais)
+    [x] Escrever README com instruções de setup, endpoints, decisões técnicas e trade-offs

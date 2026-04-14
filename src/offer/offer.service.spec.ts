@@ -2,6 +2,7 @@
 import { ForbiddenException, NotFoundException } from "@nestjs/common";
 import { Test, TestingModule } from "@nestjs/testing";
 import type { JwtPayload } from "src/auth/guards/jwt-auth.guard";
+import { NotificationGateway } from "src/notification/notification.gateway";
 import { PrismaService } from "src/prisma.service";
 import { StoreService } from "src/store/store.service";
 import { OfferService } from "./offer.service";
@@ -59,6 +60,7 @@ describe("OfferService", () => {
     };
   };
   let storeService: { findByUserId: jest.Mock };
+  let notificationGateway: { notifyInterestedBuyers: jest.Mock };
 
   beforeEach(async () => {
     prisma = {
@@ -71,12 +73,16 @@ describe("OfferService", () => {
       },
     };
     storeService = { findByUserId: jest.fn() };
+    notificationGateway = {
+      notifyInterestedBuyers: jest.fn().mockResolvedValue(undefined),
+    };
 
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         OfferService,
         { provide: PrismaService, useValue: prisma },
         { provide: StoreService, useValue: storeService },
+        { provide: NotificationGateway, useValue: notificationGateway },
       ],
     }).compile();
 
@@ -172,6 +178,20 @@ describe("OfferService", () => {
       expect(prisma.offer.create).toHaveBeenCalledWith({
         data: expect.objectContaining({ name: "Oferta", description: "Desc" }),
       });
+    });
+
+    it("should notify interested buyers after offer is created", async () => {
+      storeService.findByUserId.mockResolvedValue(mockStore);
+      prisma.offer.create.mockResolvedValue(mockOffer);
+
+      await service.create(createDto, sellerUser);
+
+      // Allow the void promise to settle
+      await Promise.resolve();
+
+      expect(notificationGateway.notifyInterestedBuyers).toHaveBeenCalledWith(
+        mockOffer,
+      );
     });
   });
 

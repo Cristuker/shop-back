@@ -4,6 +4,7 @@ import {
   NotFoundException,
 } from "@nestjs/common";
 import type { JwtPayload } from "src/auth/guards/jwt-auth.guard";
+import { NotificationGateway } from "src/notification/notification.gateway";
 import { PrismaService } from "src/prisma.service";
 import { StoreService } from "src/store/store.service";
 import { CreateOfferDto } from "./dto/create-offer.dto";
@@ -15,6 +16,7 @@ export class OfferService {
   constructor(
     private readonly prisma: PrismaService,
     private readonly storeService: StoreService,
+    private readonly notificationGateway: NotificationGateway,
   ) {}
 
   async findActive(query: ListOfferDto) {
@@ -59,7 +61,7 @@ export class OfferService {
       throw new NotFoundException("Store not found for this seller");
     }
 
-    return this.prisma.offer.create({
+    const offer = await this.prisma.offer.create({
       data: {
         name: dto.name.trim(),
         description: dto.description.trim(),
@@ -70,6 +72,10 @@ export class OfferService {
         storeId: store.id,
       },
     });
+
+    void this.notificationGateway.notifyInterestedBuyers(offer);
+
+    return offer;
   }
 
   async update(id: number, dto: UpdateOfferDto, user: JwtPayload) {
